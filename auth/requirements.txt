@@ -1,0 +1,12 @@
+Django<5
+psycopg2-binary>=2.8,<3
+django-environ<0.9
+PyJWT[crypto]<3
+djangorestframework<4
+factory-boy<4
+coreapi<3
+pydantic<2
+django-filter<22
+djangorestframework-csv<3
+drf-excel<3
+redis<5

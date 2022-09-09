@@ -1,0 +1,60 @@
+version: "3.1"
+
+services:
+  postgres:
+    container_name: mentoring_postgres
+    image: postgres
+    volumes:
+      - ./db_setup.sh:/docker-entrypoint-initdb.d/db_setup.sh
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5433:5432"
+
+  redis:
+    container_name: mentoring_redis
+    image: redis
+    restart: always
+    volumes:
+      - "redis:/data"
+    ports:
+      - "6379:6379"
+
+  auth:
+    container_name: mentoring_auth
+    build: auth
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./auth:/opt/auth/
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - postgres
+
+  docs:
+    container_name: mentoring_docs
+    build: docs
+    command: python main.py
+    volumes:
+      - ./docs/:/opt/docs/
+      - ./docs/uploads/:/opt/docs/uploads/
+    ports:
+      - "8001:8001"
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - postgres
+
+
+volumes:
+  redis: {}
+  postgres_data:
